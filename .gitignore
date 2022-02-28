@@ -1,0 +1,12 @@
+bin
+cache
+*__pycache__
+experiments/main
+ann/cmd/accuracy/accuracy
+results
+*.csv
+*.pdf
+*.o
+*.a
+*.prof
+*.DS_store
