@@ -57,7 +57,7 @@ func main() {
 		Lattice             int     `default:"2"`
 		ApproximationFactor float64 `default:"2"`
 		Mode                string  `default:"train"`
-		OutputDim           uint64  `default:"100"`
+		OutputDim           uint64  `default:"50"`
 		CoordBits           uint64  `default:"16"`
 
 		// a value large enough such that any translation will be random
