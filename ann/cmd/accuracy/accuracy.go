@@ -140,20 +140,35 @@ func main() {
 	}
 
 	fmt.Println("Finding max of JL-transformed coordinates")
+
+	numThreads := runtime.NumCPU()
+	maxes := make(chan float64)
+
 	jlTransform := hash.NewHashCommon(inputDim, int(outputDim), 0, true)
-	maxValue := 0.0
-	for i := 0; i < len(data); i++ {
-		pCompressed := jlTransform.Project(data[i])
-		for j := 0; j < len(pCompressed.Coords); j++ {
-			if math.Abs(pCompressed.Coords[j]) > maxValue {
-				maxValue = math.Abs(pCompressed.Coords[j])
+	spans := hash.Spans(len(data), numThreads)
+	for t := 0; t < numThreads; t++ {
+		go func(t int) {
+			maxValue := 0.0
+			for i := spans[t][0]; i < spans[t][1]; i++ {
+				pCompressed := jlTransform.Project(data[i])
+				for j := 0; j < len(pCompressed.Coords); j++ {
+					if math.Abs(pCompressed.Coords[j]) > maxValue {
+						maxValue = math.Abs(pCompressed.Coords[j])
+					}
+				}
+				maxes <- maxValue
 			}
+		}(t)
+	}
+	maxValue := 0.0
+	for t := 0; t < numThreads; t++ {
+		partialMax := <-maxes
+		if partialMax > maxValue {
+			maxValue = partialMax
 		}
 	}
 
 	fmt.Printf("Max value %v\n", maxValue)
-
-	numThreads := runtime.NumCPU()
 
 	done := make(chan bool)
 
