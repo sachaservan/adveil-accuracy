@@ -156,8 +156,8 @@ func main() {
 						maxValue = math.Abs(pCompressed.Coords[j])
 					}
 				}
-				maxes <- maxValue
 			}
+			maxes <- maxValue
 		}(t)
 	}
 	maxValue := 0.0
